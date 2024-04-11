@@ -229,6 +229,12 @@ class Predictor(BasePredictor):
         custom_sd_model: str = Input(
             default=""
         ),
+        tv_encoder_tile_size: int = Input(
+            description="TV encoder tile size", default=3072
+        ),
+        tv_decoder_tile_size: int = Input(
+            description="TV decoder tile size", default=192
+        )
     ) -> list[Path]:
         """Run a single prediction on the model"""
         print("Running prediction")
@@ -326,14 +332,13 @@ class Predictor(BasePredictor):
                     "Tiled VAE": {
                         "args": [
                             True,
-                            3072,
-                            192,
+                            tv_encoder_tile_size,
+                            tv_decoder_tile_size,
                             True,
                             True,
                             True,
                             True,
                         ]
-
                     },
                     "controlnet": {
                         "args": [
