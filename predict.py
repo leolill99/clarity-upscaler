@@ -160,10 +160,19 @@ class Predictor(BasePredictor):
         with open(safetensors_path, "wb") as file:
             file.write(response.content)
 
-        print(f"Custom checkpoint downloading and saving took {round(time.time() - start_time_custom, 2)} seconds")
+        print(f"Checkpoint downloading took {round(time.time() - start_time_custom, 2)} seconds")
 
         return safetensors_path
 
+    def calc_scale_factors(self, value):
+        lst = []
+        while value >= 2: 
+            lst.append(2)
+            value /= 2 
+        if value > 1:
+            lst.append(value)
+        return lst
+    
     def predict(
         self,
         image: Path = Input(description="input image"),
@@ -269,22 +278,14 @@ class Predictor(BasePredictor):
         base64_encoded_data = base64.b64encode(binary_image_data)
         base64_image = base64_encoded_data.decode('utf-8')
 
-        def calc_scale_factors(value):
-            lst = []
-            while value >= 2: 
-                lst.append(2)
-                value /= 2 
-            if value > 1:
-                lst.append(value)
-            return lst
-        
         multipliers = [scale_factor]
         if scale_factor > 2:
-            multipliers = calc_scale_factors(scale_factor)
-        print("Multiplier: ", multipliers)        
+            multipliers = self.calc_scale_factors(scale_factor)
+        
+        print("Upscale your image " + len(multipliers) + " times")
 
         for multiplier in multipliers:
-            print("Multiplier: ", multiplier)
+            print("Upscaling with scale_factor: ", multiplier)
             payload = {
                 "override_settings": {
                     "sd_model_checkpoint": sd_model,
