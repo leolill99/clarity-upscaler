@@ -282,7 +282,7 @@ class Predictor(BasePredictor):
         if scale_factor > 2:
             multipliers = self.calc_scale_factors(scale_factor)
         
-        print("Upscale your image " + len(multipliers) + " times")
+        print("Upscale your image " + str(len(multipliers)) + " times")
 
         for multiplier in multipliers:
             print("Upscaling with scale_factor: ", multiplier)
